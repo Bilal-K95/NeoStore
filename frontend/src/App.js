@@ -8,22 +8,39 @@ import ForgotPassword from "./components/ForgotPassword";
 import Footer from "./components/Footer";
 import Home from "./components/Home";
 import Product from "./components/Product";
+import Cart from "./components/Cart";
+import UserProfile from "./components/UserProfile";
+import Profile from "./components/Profile";
+import Orders from "./components/Orders";
+import Address from "./components/Address";
+import ChangePassword from "./components/ChangePassword";
+import ProductDetails from "./components/ProductDetails";
+import AddAddress from "./components/AddAddress";
+import DeliverAddress from "./components/DeliverAddress";
 
 function App() {
   return (
     <Container fluid>
-      <NavB />
-
       <Router>
+        <NavB />
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/register" element={<Registeration />} />
           <Route path="/forgotpassword" element={<ForgotPassword />} />
           <Route path="/home" element={<Home />} />
           <Route path="/product" element={<Product />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/about" element={<UserProfile />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/order" element={<Orders />} />
+          <Route path="/address" element={<Address />} />
+          <Route path="/changepassword" element={<ChangePassword />} />
+          <Route path="/productdetails/:id" element={<ProductDetails />} />
+          <Route path="/addaddress" element={<AddAddress />} />
+          <Route path="/deliveraddress" element={<DeliverAddress />} />
         </Routes>
+        <Footer />
       </Router>
-      <Footer />
     </Container>
   );
 }

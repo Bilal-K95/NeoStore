@@ -1,27 +1,22 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const cors = require("cors");
 const PORT = 8888;
 const app = express();
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+const route = require("./route/routes.js");
 
 //db connection
 const connectDB = require("./config/db");
 connectDB();
 
-const userSchema = require("./model/userSchema");
+app.use(cors());
+// const userSchema = require("./model/userSchema");
 
-app.post("/", (req, res) => {
-  let inf = new userSchema({ fname: "bilal" });
-  inf.save((err) => {
-    if (err) throw err;
-  });
-  res.send("ok");
-});
-app.get("/", (req, res) => {
-  userSchema.find({}, (err, data) => {
-    if (err) throw err;
-    res.json(data);
-  });
-});
+app.use("/user", route);
 
 app.listen(PORT, (err) => {
   if (err) throw err;

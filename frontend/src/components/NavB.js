@@ -9,8 +9,11 @@ import {
   Button,
   Badge,
 } from "react-bootstrap";
+import { NavLink } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 export default function NavB() {
+  const { cartItems } = useSelector((state) => state.cart);
   return (
     <Navbar collapseOnSelect expand="lg" id="navbar" variant="dark">
       <Container fluid>
@@ -22,9 +25,15 @@ export default function NavB() {
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="me-auto">
-            <Nav.Link href="/home">Home</Nav.Link>
-            <Nav.Link href="/product">Products</Nav.Link>
-            <Nav.Link>Orders</Nav.Link>
+            <Nav.Link as={NavLink} to="/home">
+              Home
+            </Nav.Link>
+            <Nav.Link as={NavLink} to="/product">
+              Products
+            </Nav.Link>
+            <Nav.Link as={NavLink} to="/order">
+              Orders
+            </Nav.Link>
           </Nav>
 
           <Form className="d-flex" style={{ marginLeft: "590px" }}>
@@ -33,49 +42,61 @@ export default function NavB() {
               placeholder="Search"
               aria-label="Search"
             />
-            <Button variant="outline-success mx-2">Search</Button>
+            <Button variant="outline-light mx-2">Search</Button>
           </Form>
-          <Nav className="me-auto">
-            <Nav.Link href="#features">
-              <Button variant="light">
-                <i
-                  className="fa fa-shopping-cart"
-                  aria-hidden="true"
-                  style={{ fontSize: "18px" }}
-                >
-                  <span className="ml-1">Cart</span>
-                </i>
-                <Badge bg="secondary" hidden>
-                  9
-                </Badge>
-              </Button>
+          <Nav className="me-auto" className="ml-4">
+            {cartItems.length != 0 ? (
+              <Badge
+                pill
+                bg="light"
+                text="dark"
+                style={{ position: "absolute" }}
+                className="ml-1"
+              >
+                {cartItems.length}
+              </Badge>
+            ) : (
+              ""
+            )}
+
+            <Nav.Link as={NavLink} to="/cart">
+              <i
+                class="fa fa-shopping-cart"
+                aria-hidden="true"
+                style={{
+                  color: "white",
+                  fontSize: "45px",
+                  margin: "0px -20px",
+                  position: "relative",
+                }}
+              />
             </Nav.Link>
           </Nav>
-          {/* <Nav className="me-auto">
-            <Button
-              size="sm"
-              className="btn-sm bg-light"
-              style={{ height: "40px" }}
+          <Nav className="me-auto" className="ml-4">
+            <NavDropdown
+              title={
+                <span>
+                  <i
+                    class="fa fa-user-circle-o"
+                    style={{ fontSize: "40px", color: "white" }}
+                  ></i>
+                  About
+                </span>
+              }
+              id="collasible-nav-dropdown"
             >
-              <NavDropdown
-                id="collasible-nav-dropdown"
-                className="text-light"
-                style={{ fontColor: "black" }}
-              >
-                <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
-                <NavDropdown.Item href="#action/3.2">
-                  Another action
-                </NavDropdown.Item>
-                <NavDropdown.Item href="#action/3.3">
-                  Something
-                </NavDropdown.Item>
-                <NavDropdown.Divider />
-                <NavDropdown.Item href="#action/3.4">
-                  Separated link
-                </NavDropdown.Item>
-              </NavDropdown>
-            </Button>
-          </Nav> */}
+              <NavDropdown.Item>
+                <Nav.Link className="text-dark" as={NavLink} to="/about">
+                  Profile
+                </Nav.Link>
+              </NavDropdown.Item>
+              <NavDropdown.Item>
+                <Nav.Link className="text-dark" as={NavLink} to="/">
+                  Logout
+                </Nav.Link>
+              </NavDropdown.Item>
+            </NavDropdown>
+          </Nav>
         </Navbar.Collapse>
       </Container>
     </Navbar>
