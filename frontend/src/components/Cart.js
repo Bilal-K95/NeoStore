@@ -61,7 +61,7 @@ export default function Cart() {
         <Row>
           <Col xs={8}>
             <div
-              className="mt-3"
+              className="mt-4"
               style={{
                 border: "1px",
 
@@ -149,7 +149,7 @@ export default function Cart() {
               >
                 <Table>
                   <div>
-                    <Row>
+                    <Row align="center">
                       <Col>
                         <thead>
                           <tr>
@@ -185,17 +185,25 @@ export default function Cart() {
                             <td>{quantity + GST}</td>
                           </tr>
                           <tr>
-                            <td colSpan={2}>
-                              <Link to="/deliveraddress">
-                                <Button>Proceed to buy</Button>
-                              </Link>
-                            </td>
+                            <td colSpan={2}></td>
                           </tr>
                         </tbody>
                       </Col>
                     </Row>
                   </div>
                 </Table>
+                <Link to="/deliveraddress">
+                  <Button
+                    style={{
+                      width: "450px",
+                      backgroundColor: "#00CED1",
+                      border: "none",
+                      color: "black",
+                    }}
+                  >
+                    Proceed to buy
+                  </Button>
+                </Link>
               </div>
             )}
           </Col>

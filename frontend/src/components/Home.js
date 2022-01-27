@@ -4,17 +4,25 @@ import { Link } from "react-router-dom";
 import { product } from "../config/MyServices";
 import { addToCart } from "../redux/actions/cartActions";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 export default function Home() {
   const [state, setstate] = useState([]);
+  const navigate = useNavigate();
   useEffect(() => {
-    product()
-      .then((res) => {
-        setstate(res.data);
-      })
-      .catch((err) => {
-        if (err) throw err;
-      });
+    const token = sessionStorage.getItem("token");
+    console.log(token);
+    if (token) {
+      product()
+        .then((res) => {
+          setstate(res.data);
+        })
+        .catch((err) => {
+          if (err) throw err;
+        });
+    } else {
+      navigate("/");
+    }
   }, []);
   //add to cart
   const dispatch = useDispatch();

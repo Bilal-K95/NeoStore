@@ -3,6 +3,7 @@ import { Col, Row, Card, Button, Container } from "react-bootstrap";
 import UserProfile from "./UserProfile";
 import { profile } from "../config/MyServices";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export default function Profile() {
   const [state, setState] = useState([]);
@@ -10,19 +11,24 @@ export default function Profile() {
   useEffect(() => {
     let temp = sessionStorage.getItem("user");
     let token = sessionStorage.getItem("token");
-    profile({ email: temp })
-      .then((res) => {
-        if (res.data.err == 1) {
-          alert("please login first");
-          navigate("/");
-        } else {
-          console.log(res.data);
-          setState(res.data);
-        }
-      })
-      .catch((err) => {
-        if (err) throw err;
-      });
+
+    console.log(token);
+    if (token) {
+      profile({ email: temp })
+        .then((res) => {
+          if (res.data.err == 1) {
+            alert("please login first");
+            navigate("/");
+          } else {
+            setState(res.data);
+          }
+        })
+        .catch((err) => {
+          if (err) throw err;
+        });
+    } else {
+      navigate("/");
+    }
   }, []);
   return (
     <Container>
@@ -95,7 +101,9 @@ export default function Profile() {
             <hr />
             <Row>
               <Col>
-                <Button>Edit</Button>
+                <Link to={`/editprofile/${state._id}`}>
+                  <Button>Edit</Button>
+                </Link>
               </Col>
             </Row>
           </div>

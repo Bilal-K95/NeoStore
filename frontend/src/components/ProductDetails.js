@@ -1,7 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { product } from "../config/MyServices";
 import { useParams } from "react-router-dom";
-import { Card, Row, Col, Container, Table, Button } from "react-bootstrap";
+import {
+  Card,
+  Row,
+  Col,
+  Container,
+  Table,
+  Button,
+  Tab,
+  Tabs,
+} from "react-bootstrap";
 import SocialShareButtons from "./SocialShareButtons";
 import { addToCart } from "../redux/actions/cartActions";
 import { useDispatch } from "react-redux";
@@ -128,13 +137,25 @@ export default function ProductDetails() {
                 </Col>
               </Row>
               <Row>
-                <Col className="ml-4 mt-4 d-flex">
-                  <p className="mr-4">Description</p>
-                  <p>Features</p>
+                <hr />
+                <Col className="mt-4 ml-4">
+                  <Tabs
+                    defaultActiveKey="Description"
+                    id="noanim-tab-example"
+                    className="mb-3"
+                    transition={false}
+                  >
+                    <Tab eventKey="Description" title="Description">
+                      {data.product_desc}
+                    </Tab>
+                    <Tab eventKey="Fetures" title="Fetures">
+                      <p>feture not added</p>
+                    </Tab>
+                  </Tabs>
                 </Col>
               </Row>
-              <hr />
-              <p>{data.product_desc}</p>
+
+              <p></p>
             </Table>
           );
         })}

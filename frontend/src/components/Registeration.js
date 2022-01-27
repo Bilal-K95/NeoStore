@@ -126,7 +126,7 @@ export default function Registeration() {
               className="btn btn-danger ml-2"
               id="btnsocial"
             >
-              <i class="fa fa-google" /> <span>Login with facebook</span>
+              <i class="fa fa-google" /> <span>Login with google</span>
             </Button>
 
             {/* <Row className="mt-4  d-flex align-items-center justify-content-center"> */}

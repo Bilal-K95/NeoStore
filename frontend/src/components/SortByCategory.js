@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Table, Row, Col, Card, Button, Container } from "react-bootstrap";
+import {
+  Table,
+  Row,
+  Col,
+  Card,
+  Button,
+  Pagination,
+  Dropdown,
+  Container,
+  Form,
+} from "react-bootstrap";
 import { Link, useLocation } from "react-router-dom";
 import { product } from "../config/MyServices";
 import { useNavigate } from "react-router-dom";
@@ -7,46 +17,40 @@ import PaginationComponent from "./PaginationComponent";
 import { addToCart } from "../redux/actions/cartActions";
 import { useDispatch } from "react-redux";
 
-export default function Product() {
+export default function SortByCategory() {
+  //Pagination
+  const [showPerPage, setShowPerPage] = useState(9);
+  const [pagination, setPagination] = useState({ start: 0, end: showPerPage });
+  const [total, setTotal] = useState();
   const location = useLocation();
   const category = location.pathname;
   console.log(location);
   console.log(category);
 
+  const onPaginationChange = (start, end) => {
+    setPagination({ start: start, end: end });
+  };
   const [state, setstate] = useState([]);
-  const [filter, setFilter] = useState("Category");
-  const [color, colorFilter] = useState("Color");
+  const [filter, setFilter] = useState({});
 
   const navigate = useNavigate();
   useEffect(() => {
-    const token = sessionStorage.getItem("token");
-    console.log(token);
-    if (token) {
-      product().then((res) => {
-        if (res.data.err > 0) {
-          alert("login first");
-          navigate("/");
-        } else {
-          setstate(res.data);
-        }
-      });
-    } else {
-      navigate("/");
-    }
+    product().then((res) => {
+      if (res.data.err == 1) {
+        navigate("/");
+        alert("login first");
+      } else {
+        setstate(res.data);
+
+        setTotal(res.data.length);
+      }
+    });
   }, []);
 
-  // category filter
   const handleFilter = (e) => {
     const value = e.target.value;
-    setFilter(e.target.value);
+    setFilter({ ...filter, [e.target.name]: value });
   };
-
-  //color filter
-  const handleColorFilter = (e) => {
-    const value = e.target.value;
-    colorFilter(e.target.value);
-  };
-
   console.log(filter);
   //add to cart
   const dispatch = useDispatch();
@@ -68,12 +72,7 @@ export default function Product() {
               padding: "10px",
             }}
           >
-            <a
-              href="/product"
-              style={{ textDecoration: "none", color: "black" }}
-            >
-              All Products
-            </a>
+            All Products
           </div>
           <div
             className="mt-3"
@@ -84,57 +83,62 @@ export default function Product() {
               padding: "10px",
             }}
           >
-            <select
-              name="category"
-              onChange={handleFilter}
-              style={{ border: "none", outline: "0px" }}
-            >
-              <option> Category</option>
-              <option>laptop_table</option>
-              <option>sofa</option>
-              <option>bed</option>
-              <option>chair</option>
-              <option>wardrobe</option>
-              <option>almirah</option>
+            <select name="category" onChange={handleFilter}>
+              <option disabled> Categories</option>
+              <option>Sofa</option>
+              <option>Chair</option>
+              <option>Table</option>
             </select>
+            {/* <Dropdown>
+              <Dropdown.Toggle variant="light" id="dropdown-basic">
+                Categories
+              </Dropdown.Toggle> */}
+
+            {/* <Dropdown.Menu> */}
+            {/* <Link to={`/sortbycategory/${data.product_category}`}></Link> */}
+            {/* <Dropdown.Item>Sofa</Dropdown.Item>
+                <Dropdown.Item>Chair</Dropdown.Item>
+                <Dropdown.Item>Table</Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown> */}
           </div>
           <div
             className="mt-3"
             style={{
               border: "1px",
+
               boxShadow: "5px 0px 18px #888888 ",
               padding: "10px",
             }}
           >
-            <select
-              name="color"
-              onChange={handleColorFilter}
-              style={{ border: "none", outline: "0px" }}
-            >
-              <option> Color</option>
-              <option>brown</option>
+            <select name="color" onChange={handleFilter}>
+              <option disabled> Categories</option>
+              <option>red</option>
               <option>black</option>
               <option>white</option>
-              <option>orange</option>
-              <option>blue</option>
-              <option>pink</option>
             </select>
+            {/* <Dropdown>
+              <Dropdown.Toggle variant="light" id="dropdown-basic">
+                Color
+              </Dropdown.Toggle>
+
+              <Dropdown.Menu name="category" onChange={handleFilter}>
+                <Dropdown.Item href="#/action-1">black </Dropdown.Item>
+                <Dropdown.Item href="#/action-2">white</Dropdown.Item>
+                <Dropdown.Item href="#/action-3">green</Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown> */}
           </div>
         </Col>
 
         <Col style={{ marginLeft: "0px" }}>
           <Row>
-            {console.log(filter)}
             {state
-              .filter((data) =>
-                filter != "Category" ? data?.product_category === filter : data
-              )
-              .filter((data) =>
-                color != "Color" ? data?.product_color === color : data
-              )
+              .filter((data) => data.category_name == state.filter)
               .map((data) => {
                 return (
                   <>
+                    {/* <Link to={`/sortbycategory/${data.product_category}`}> */}
                     <Col
                       xs={3}
                       className=" text-center"
@@ -164,10 +168,17 @@ export default function Product() {
                         </Card.Body>
                       </Card>
                     </Col>
+                    {/* </Link> */}
                   </>
                 );
               })}
           </Row>
+
+          <PaginationComponent
+            showPerPage={showPerPage}
+            onPaginationChange={onPaginationChange}
+            total={total}
+          />
         </Col>
       </Row>
     </Container>

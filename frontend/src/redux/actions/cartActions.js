@@ -19,7 +19,7 @@
 import * as actionTypes from "../constants/cartConstants";
 import axios from "axios";
 const url = "http://localhost:8888";
-export const addToCart = (id) => async (dispatch) => {
+export const addToCart = (id) => async (dispatch, getState) => {
   try {
     const { data } = await axios.get(`${url}/user/product/?_id=${id}`);
 
@@ -27,8 +27,10 @@ export const addToCart = (id) => async (dispatch) => {
   } catch (err) {
     console.log("error while calling add to cart");
   }
+  localStorage.setItem("cart", JSON.stringify(getState().cart.cartItems));
 };
 
-export const removeFromCart = (id) => (dispatch) => {
+export const removeFromCart = (id) => (dispatch, getState) => {
   dispatch({ type: actionTypes.REMOVE_FROM_CART, payload: id });
+  localStorage.setItem("cart", JSON.stringify(getState().cart.cartItems));
 };

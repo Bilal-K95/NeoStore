@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Container,
   NavDropdown,
@@ -14,6 +14,7 @@ import { useSelector } from "react-redux";
 
 export default function NavB() {
   const { cartItems } = useSelector((state) => state.cart);
+
   return (
     <Navbar collapseOnSelect expand="lg" id="navbar" variant="dark">
       <Container fluid>

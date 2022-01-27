@@ -4,6 +4,7 @@ import UserProfile from "./UserProfile";
 import { Link } from "react-router-dom";
 import { getaddress } from "../config/MyServices";
 import { deleteAddress } from "../config/MyServices";
+import { useNavigate } from "react-router-dom";
 
 export default function Address() {
   const [state, setstate] = useState({
@@ -15,24 +16,47 @@ export default function Address() {
   });
 
   const [data, setdata] = useState([]);
+  const navigate = useNavigate();
 
   //get address
   useEffect(() => {
     let temp = sessionStorage.getItem("user");
 
-    getaddress({ email: temp })
-      .then((res) => {
-        console.log(res.data);
-        setdata(res.data);
-      })
-      .catch((err) => {
-        if (err) throw err;
-      });
+    const token = sessionStorage.getItem("token");
+    console.log(token);
+    if (token) {
+      getaddress({ email: temp })
+        .then((res) => {
+          console.log(res.data);
+          setdata(res.data);
+          console.log(res.data);
+        })
+        .catch((err) => {
+          if (err) throw err;
+        });
+    } else {
+      navigate("/");
+    }
   }, []);
 
   //delte address
-  const onDelete = async (id) => {
-    await deleteAddress(id);
+  const onDelete = async (id, item) => {
+    console.log(id, item);
+    let d = { id: id, item: item };
+    await deleteAddress(d).then((res) => {
+      if (res.err.data > 0) {
+        alert(res.data.err);
+      } else {
+        if (res.data == 0) {
+          alert(res.data.err);
+        }
+      }
+    });
+  };
+
+  // edit address
+  const onEdit = () => {
+    window.location.reload(false);
   };
 
   return (
@@ -63,15 +87,22 @@ export default function Address() {
                       {detail.address}
 
                       <span>
-                        <i
-                          class="fa fa-remove"
+                        <Button
+                          className="btn-sm btn-light"
                           style={{
                             float: "right",
-
-                            color: "red",
                           }}
-                          onClick={() => onDelete(detail._id)}
-                        />
+                        >
+                          <i
+                            class="fa fa-remove"
+                            style={{
+                              float: "right",
+
+                              color: "red",
+                            }}
+                            onClick={() => onDelete(detail._id, item._id)}
+                          />
+                        </Button>
                       </span>
                     </p>
 
@@ -79,7 +110,7 @@ export default function Address() {
                       {detail.city}-{detail.pincode}
                     </p>
                     <p>{detail.country}</p>
-                    <Button className="btn-sm  ">Edit</Button>
+
                     <hr />
                   </>
                 ))}

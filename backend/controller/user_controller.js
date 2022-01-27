@@ -6,28 +6,34 @@ const CartSchema = require("../model/CartSchema");
 const jwt = require("jsonwebtoken");
 const AddressSchema = require("../model/AddressSchema");
 const jwtSecret = "asd889asdas5656asdasbilal";
+const ForgotPassword = require("../model/ForgotPassword");
+const nodemailer = require("nodemailer");
+const bcrypt = require("bcrypt");
+
+const OrderSchema = require("../model/OrderSchema");
 
 //jwt token
-function autenticateToken(req, res, next) {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
-  console.log(token);
-  if (token == null) {
-    return res.json({ err: 1, msg: "Token not match" });
-  } else {
-    jwt.verify(token, jwtSecret, (err, data) => {
-      if (err) {
-        return res.json({ err: 1, msg: "Token incorrect" });
-      } else {
-        return console.log("Match");
-        next();
-      }
-    });
-  }
-}
+// function autenticateToken(req, res, next) {
+//   const authHeader = req.headers["authorization"];
+//   const token = authHeader && authHeader.split(" ")[1];
+//   console.log(token);
+//   if (token == null) {
+//     return res.json({ err: 1, msg: "Token not match" });
+//   } else {
+//     jwt.verify(token, jwtSecret, (err, data) => {
+//       if (err) {
+//         return res.json({ err: 1, msg: "Token incorrect" });
+//       } else {
+//         return console.log("Match");
+//         next();
+//       }
+//     });
+//   }
+// }
 
 //login form
 function getUser(req, res) {
+  console.log(req.body);
   userSchema.findOne({ email: req.body.email }, (err, data) => {
     if (err) throw err;
     else {
@@ -46,6 +52,24 @@ function getUser(req, res) {
       }
     }
   });
+  // userSchema.findOne({ email: req.body.email }, (err, data) => {
+  //   if (err) throw err;
+  //   else {
+  //     if (data != null) {
+  //       if (data.password == req.body.password) {
+  //         let payload = {
+  //           email: data.email,
+  //         };
+  //         const token = jwt.sign(payload, jwtSecret, { expiresIn: 3600000 });
+  //         res.json({ err: 0, msg: "login success full", token: token });
+  //       } else {
+  //         res.send({ err: 1, msg: "incorrect password" });
+  //       }
+  //     } else {
+  //       res.send({ err: 2, msg: "user not found" });
+  //     }
+  //   }
+  // });
   // console.log(email);
 }
 
@@ -139,8 +163,8 @@ function addItemToCart(req, res) {
 
 function address(req, res) {
   console.log(req.body);
-  var crypto = require("crypto");
-  var id = crypto.randomBytes(20).toString("hex");
+  let id = Math.random();
+
   let data = {
     _id: id,
     address: req.body.address,
@@ -172,10 +196,15 @@ function getaddress(req, res) {
 }
 
 function deleteAddress(req, res) {
-  console.log(req.params.id);
+  console.log(req.body.id);
+
+  console.log(req.body.item);
   userSchema
-    .deleteOne({ _id: req.params.id })
-    .then(() => {
+    .findOneAndUpdate(
+      { _id: req.body.item },
+      { $pull: { address: { _id: req.body.id } } }
+    )
+    .then((res) => {
       res.status(200).json({
         err: 0,
         msg: "Deleted!",
@@ -214,14 +243,189 @@ function deleteAddress(req, res) {
 //     }
 //   };
 
+//nodemailer
+
+const emailSend = (req, res) => {
+  console.log(req.body.email);
+  userSchema.findOne({ email: req.body.email }, (err, data) => {
+    if (data != null) {
+      let otpCode = Math.floor(Math.random() * 10000 + 1);
+      let otpData = new ForgotPassword({
+        email: req.body.email,
+        code: otpCode,
+        expiresIn: new Date().getTime() + 300 * 1000,
+      });
+      otpData.save((err) => {
+        if (err) throw err;
+        else {
+          let transport = nodemailer.createTransport({
+            service: "gmail",
+            host: "smtp.gmail.com",
+            port: 465,
+            secure: true,
+            tls: {
+              rejectUnauthorized: false,
+            },
+            auth: {
+              user: "bilalshaikh.fake.acc@gmail.com",
+              pass: "@@9764641992",
+            },
+          });
+          transport.sendMail({
+            from: "bilalshaikh.fake.acc@gmail.com",
+            to: "bilalshaikh.fake.acc@gmail.com",
+            subject: "test mail",
+            text: "test mail from nodemailer",
+            html: `your password reset otp is ${otpCode}`,
+          }),
+            (err, res) => {
+              if (err) {
+                console.log("err");
+              } else {
+                console.log("mail send successfully");
+              }
+            };
+        }
+      });
+      res
+        .status(200)
+        .json({ err: 0, msg: "OTP send success full please check email" });
+    } else {
+      // res.status(400).json({ err: 1, msg: "email not exist" });
+      console.log("not exist");
+      res.json({ err: 1, msg: "user not exist" });
+    }
+  });
+};
+
+const forgotPassword = (req, res) => {
+  console.log(req.body);
+  console.log(req.body.email);
+  ForgotPassword.find(
+    {
+      email: req.body.email,
+      code: req.body.otp,
+    },
+    (err, data) => {
+      if (err) throw err;
+      else {
+        console.log(data);
+        if (data != null) {
+          console.log(data);
+          userSchema.findOneAndUpdate(
+            { email: req.body.email },
+            {
+              $set: {
+                password: req.body.newpassword,
+                cpassword: req.body.cpassword,
+              },
+            },
+            (err, data) => {
+              console.log(data);
+            }
+          );
+        }
+      }
+    }
+  );
+};
+
+const ChangePassword = (req, res) => {
+  userSchema.findOne({ email: req.body.email }, (err, data) => {
+    if (err) throw err;
+    else {
+      if (data.password == req.body.oldpassword) {
+        userSchema.findOneAndUpdate(
+          { email: req.body.email },
+          {
+            $set: {
+              password: req.body.newpassword,
+              cpassword: req.body.cpassword,
+            },
+          },
+          (err, data) => {
+            if (err) throw err;
+          }
+        );
+        res.json({ err: 0, msg: "password change successfully" });
+      } else {
+        res.json({ err: 1, msg: "please enter correct old password" });
+      }
+    }
+  });
+};
+
+const postOrder = (req, res) => {
+  console.log(req.body);
+  let inf = new OrderSchema(req.body);
+  inf.save((err) => {
+    if (err) throw err;
+    else {
+      console.log("userprofie", req.body);
+      res.send(req.body);
+    }
+  });
+};
+
+const getOrder = (req, res) => {
+  OrderSchema.find({ email: req.body.email }, (err, data) => {
+    if (err) throw err;
+    else {
+      if (data != null) {
+        res.send(data);
+      }
+    }
+  });
+
+  // OrderSchema.findOneAndUpdate({ email: req.body.email }, (err, data) => {
+  //   if (err) {
+  //     res.json({ err: 1, msg: "please login first" });
+  //   } else {
+  //     if (data != null) {
+  //       console.log(data);
+  //       res.send(data);
+  //     }
+  //   }
+  // });
+};
+
+//get user by id
+const getUserById = async (req, res) => {
+  const id = req.params.id;
+  try {
+    const user = await userSchema.findById(id);
+    res.json(user);
+  } catch (err) {
+    if (err) throw err;
+  }
+};
+
+//edit user
+const editUser = async (req, res) => {
+  const user = req.body;
+  const editUser = new userSchema(user);
+  try {
+    await userSchema.updateOne({ _id: req.params.id }, editUser);
+    res.json(editUser);
+  } catch (err) {
+    res.json({ err: 1, msg: "something went wrong" });
+  }
+};
+
 module.exports = {
   getUser,
   postUser,
   getProfile,
   getProduct,
   addItemToCart,
-  autenticateToken,
   address,
   getaddress,
   deleteAddress,
+  emailSend,
+  forgotPassword,
+  postOrder,
+  getOrder,
+  getUserById,
+  editUser,
+  ChangePassword,
 };

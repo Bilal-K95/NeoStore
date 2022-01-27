@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Col, Row, Container, Button } from "react-bootstrap";
+import { Col, Row, Container, Button, Form } from "react-bootstrap";
 import UserProfile from "./UserProfile";
 import { Link } from "react-router-dom";
 import { getaddress } from "../config/MyServices";
@@ -59,7 +59,14 @@ export default function DeliverAddress() {
                 <p key={item.id}>{item.id}</p>
                 {item.address.map((detail) => (
                   <>
-                    <p>
+                    <p className="ml-3">
+                      <span style={{ float: "left" }}>
+                        <Form.Check
+                          type="radio"
+                          name="address"
+                          aria-label="radio 1"
+                        />
+                      </span>
                       {detail.address}
 
                       <span>
@@ -75,18 +82,23 @@ export default function DeliverAddress() {
                       </span>
                     </p>
 
-                    <p>
+                    <p className="ml-3">
                       {detail.city}-{detail.pincode}
                     </p>
-                    <p>{detail.country}</p>
-                    <Button className="btn-sm  ">Edit</Button>
+                    <p className="ml-3">{detail.country}</p>
+                    <Button className="btn-sm ml-3 ">Edit</Button>
                     <hr />
                   </>
                 ))}
               </>
             ))}
             <Link to="/addaddress">
-              <Button className="btn-sm btn-success ">Add Address</Button>
+              <Button className="btn-sm ml-3">Add Address</Button>
+            </Link>
+            <Link to="/carddetail">
+              <Button className="btn-sm btn-success" style={{ float: "right" }}>
+                place order
+              </Button>
             </Link>
           </div>
         </Col>

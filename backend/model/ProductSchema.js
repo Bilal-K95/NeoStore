@@ -30,6 +30,14 @@ const productSchema = new mongoose.Schema({
     type: Number,
     require: true,
   },
+  product_category: {
+    type: String,
+    require: true,
+  },
+  product_color: {
+    type: String,
+    require: true,
+  },
   product_stock: {
     type: String,
     require: true,
@@ -40,6 +48,11 @@ const productSchema = new mongoose.Schema({
   },
   product_material: {
     type: String,
+    require: true,
+  },
+  category: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "category",
     require: true,
   },
 
@@ -54,6 +67,10 @@ const productSchema = new mongoose.Schema({
         require: true,
       },
       subImage_2: {
+        type: String,
+        require: true,
+      },
+      subImage_3: {
         type: String,
         require: true,
       },

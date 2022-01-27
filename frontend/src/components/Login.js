@@ -204,7 +204,7 @@ export default function Login() {
         <Col>
           <p className="mt-4" style={{ marginLeft: "380px" }}>
             <Link to="/register"> Register Now </Link>|
-            <Link to="/forgotpassword"> Forgotten?</Link>
+            <Link to="/emailotp"> Forgotten?</Link>
           </p>
         </Col>
       </Row>

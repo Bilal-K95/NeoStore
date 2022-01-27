@@ -28,7 +28,31 @@ export const address = async (data) => {
 export const getaddress = async (data) => {
   return await axios.post(`${MAIN_URL}/user/getaddress`, data);
 };
-export const deleteAddress = async (id) => {
+export const deleteAddress = async (data) => {
+  return await axios.post(`${MAIN_URL}/user/deleteaddress`, data);
+};
+
+export const OTPSend = async (data) => {
+  return await axios.post(`${MAIN_URL}/user/emailOTP`, data);
+};
+export const forgotPassword = async (data) => {
+  return await axios.post(`${MAIN_URL}/user/forgotpassword`, data);
+};
+export const order = async (data) => {
+  return await axios.post(`${MAIN_URL}/user/order`, data);
+};
+export const getOrder = async (data) => {
+  return await axios.post(`${MAIN_URL}/user/getorder`, data);
+};
+export const getUserById = async (id) => {
+  id = id || "";
   console.log(id);
-  return await axios.delete(`${MAIN_URL}/user/deleteaddress/${id}`);
+  return await axios.get(`${MAIN_URL}/user/getuserbyid/${id}`);
+};
+
+export const editUser = async (id, data) => {
+  return await axios.put(`${MAIN_URL}/user/editUser/${id}`, data);
+};
+export const changePassword = async (data) => {
+  return await axios.post(`${MAIN_URL}/user/changepassword`, data);
 };
